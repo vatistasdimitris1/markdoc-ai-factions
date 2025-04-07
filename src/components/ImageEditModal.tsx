@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Image, ImageEdit } from 'lucide-react';
+import { Loader2, Image, Edit } from 'lucide-react';
 import { useChat } from '@/contexts/ChatContext';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -62,7 +61,7 @@ export const ImageEditModal = () => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
-          <ImageEdit size={16} />
+          <Edit size={16} />
           Edit Image
         </Button>
       </SheetTrigger>
@@ -114,7 +113,7 @@ export const ImageEditModal = () => {
             className="w-full"
             disabled={isLoading || !selectedImage || !editPrompt.trim()}
           >
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImageEdit className="mr-2 h-4 w-4" />}
+            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Edit className="mr-2 h-4 w-4" />}
             Edit Image
           </Button>
         </form>
