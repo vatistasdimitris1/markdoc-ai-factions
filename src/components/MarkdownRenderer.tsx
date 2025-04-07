@@ -15,7 +15,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
       <ReactMarkdown
         rehypePlugins={[rehypeRaw]}
         components={{
-          code({ node, inline, className, children, ...props }) {
+          code({ node, inline, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || '');
             return !inline && match ? (
               <SyntaxHighlighter
@@ -36,7 +36,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
           pre({ children }) {
             return <div className="not-prose">{children}</div>;
           },
-          img({ node, ...props }) {
+          img({ node, ...props }: any) {
             return (
               <img
                 className="max-w-full h-auto rounded-md my-2"
