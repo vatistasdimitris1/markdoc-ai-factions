@@ -34,11 +34,6 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
     minute: '2-digit',
   }).format(timestamp);
 
-  // Combine any images with the markdown content
-  const fullContent = images.length > 0
-    ? images.map(img => `![Image](${img})\n\n`).join('') + content
-    : content;
-
   return (
     <Card className={`p-4 border ${senderData.color} mb-4`}>
       <div className="flex items-start gap-3">
@@ -53,7 +48,21 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
             <span className="text-xs text-muted-foreground">{formattedTime}</span>
           </div>
           
-          <MarkdownRenderer content={fullContent} />
+          {images && images.length > 0 && (
+            <div className="mb-3 space-y-2">
+              {images.map((img, index) => (
+                <div key={index} className="relative rounded-md overflow-hidden border border-muted">
+                  <img 
+                    src={img} 
+                    alt={`${sender === 'ai' ? 'Generated' : 'Uploaded'} image ${index + 1}`}
+                    className="max-w-full max-h-80 object-contain mx-auto"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          
+          {content && <MarkdownRenderer content={content} />}
         </div>
       </div>
     </Card>

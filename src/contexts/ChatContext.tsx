@@ -27,6 +27,11 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       timestamp: new Date(),
     };
     
+    // If user uploaded images, add them to the message
+    if (images.length > 0) {
+      userMessage.images = images.map(img => URL.createObjectURL(img));
+    }
+    
     setMessages(prev => [...prev, userMessage]);
     
     // Generate AI response
@@ -56,6 +61,15 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const generateImage = async (prompt: string) => {
+    // Add user message with the prompt
+    const userMessage: MessageProps = {
+      content: `Generate image: "${prompt}"`,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
     setIsLoading(true);
     try {
       const response = await geminiService.generateImage(prompt);
@@ -82,12 +96,15 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const editImage = async (prompt: string, image: File) => {
+    // Create object URL for the image preview
+    const imageUrl = URL.createObjectURL(image);
+    
     // Add user message with the image to edit
     const userMessage: MessageProps = {
       content: `Edit request: ${prompt}`,
       sender: 'user',
       timestamp: new Date(),
-      images: [URL.createObjectURL(image)],
+      images: [imageUrl],
     };
     
     setMessages(prev => [...prev, userMessage]);
