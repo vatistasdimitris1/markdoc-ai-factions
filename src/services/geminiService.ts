@@ -152,6 +152,83 @@ export const geminiService = {
       });
       throw error;
     }
+  },
+
+  async editImage(prompt: string, image: File): Promise<GeminiImageGenerationResponse> {
+    try {
+      // Convert the image to base64
+      const imageData = await fileToBase64(image);
+      
+      const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=" + API_KEY, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                { 
+                  text: prompt 
+                },
+                {
+                  inlineData: {
+                    mimeType: image.type,
+                    data: imageData
+                  }
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            temperature: 1,
+            topP: 0.95,
+            topK: 40,
+            maxOutputTokens: 8192,
+            responseModalities: ["image", "text"],
+            responseMimeType: "text/plain",
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error?.message || "Failed to edit image");
+      }
+
+      const data = await response.json();
+      
+      if (!data.candidates || data.candidates.length === 0) {
+        throw new Error("No edited image generated");
+      }
+
+      // Extract the image data from the response
+      let imageUrl = "";
+      
+      for (const candidate of data.candidates) {
+        for (const part of candidate.content.parts) {
+          if (part.inlineData) {
+            imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+            break;
+          }
+        }
+        if (imageUrl) break;
+      }
+
+      if (!imageUrl) {
+        throw new Error("No edited image found in response");
+      }
+
+      return { imageUrl };
+    } catch (error) {
+      console.error("Error editing image:", error);
+      toast({
+        title: "Error editing image",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive",
+      });
+      throw error;
+    }
   }
 };
 

@@ -8,6 +8,7 @@ interface ChatContextType {
   messages: MessageProps[];
   sendMessage: (content: string, images?: File[]) => Promise<void>;
   generateImage: (prompt: string) => Promise<void>;
+  editImage: (prompt: string, image: File) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -80,11 +81,49 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const editImage = async (prompt: string, image: File) => {
+    // Add user message with the image to edit
+    const userMessage: MessageProps = {
+      content: `Edit request: ${prompt}`,
+      sender: 'user',
+      timestamp: new Date(),
+      images: [URL.createObjectURL(image)],
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    
+    // Generate edited image
+    setIsLoading(true);
+    try {
+      const response = await geminiService.editImage(prompt, image);
+      
+      // Add AI response with the edited image
+      const aiMessage: MessageProps = {
+        content: `Image edited based on: "${prompt}"`,
+        sender: 'ai',
+        timestamp: new Date(),
+        images: [response.imageUrl],
+      };
+      
+      setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error editing image:', error);
+      toast({
+        title: "Failed to edit image",
+        description: "There was an error editing the image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <ChatContext.Provider value={{ 
       messages, 
       sendMessage,
       generateImage,
+      editImage,
       isLoading
     }}>
       {children}

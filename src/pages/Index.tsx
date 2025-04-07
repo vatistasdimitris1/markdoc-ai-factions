@@ -7,6 +7,7 @@ import { Loader2, ImagePlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { ImageEditModal } from '@/components/ImageEditModal';
 
 const ChatInterface = () => {
   const { messages, sendMessage, generateImage, isLoading } = useChat();
@@ -32,40 +33,44 @@ const ChatInterface = () => {
         <div className="container flex justify-between items-center">
           <h1 className="text-xl font-bold">Gemini AI Chat</h1>
           
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-2">
-                <ImagePlus size={16} />
-                Generate Image
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Generate an Image</SheetTitle>
-                <SheetDescription>
-                  Enter a detailed description of the image you want to create.
-                </SheetDescription>
-              </SheetHeader>
-              <form onSubmit={handleImageGeneration} className="mt-6 space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    value={imagePrompt}
-                    onChange={(e) => setImagePrompt(e.target.value)}
-                    placeholder="Describe the image you want to generate..."
-                    className="w-full"
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full"
-                  disabled={isLoading || !imagePrompt.trim()}
-                >
-                  {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-2 h-4 w-4" />}
-                  Generate
+          <div className="flex gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <ImagePlus size={16} />
+                  Generate Image
                 </Button>
-              </form>
-            </SheetContent>
-          </Sheet>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>Generate an Image</SheetTitle>
+                  <SheetDescription>
+                    Enter a detailed description of the image you want to create.
+                  </SheetDescription>
+                </SheetHeader>
+                <form onSubmit={handleImageGeneration} className="mt-6 space-y-4">
+                  <div className="space-y-2">
+                    <Input
+                      value={imagePrompt}
+                      onChange={(e) => setImagePrompt(e.target.value)}
+                      placeholder="Describe the image you want to generate..."
+                      className="w-full"
+                    />
+                  </div>
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={isLoading || !imagePrompt.trim()}
+                  >
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImagePlus className="mr-2 h-4 w-4" />}
+                    Generate
+                  </Button>
+                </form>
+              </SheetContent>
+            </Sheet>
+            
+            <ImageEditModal />
+          </div>
         </div>
       </header>
       
@@ -80,7 +85,7 @@ const ChatInterface = () => {
                 <code>**bold**</code>, <code>*italic*</code>, <code>`code`</code>, <code>```code blocks```</code>
               </p>
               <p className="mt-2 text-sm">
-                You can also upload images for analysis or generate images using the "Generate Image" button.
+                You can also upload images for analysis, generate new images, or edit existing images.
               </p>
             </div>
           ) : (
