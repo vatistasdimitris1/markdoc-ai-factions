@@ -19,6 +19,17 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  // Helper to get context from previous messages
+  const getPreviousContext = (limit = 10) => {
+    // Get the most recent messages (limited) to provide context
+    const recentMessages = messages.slice(-limit);
+    
+    return recentMessages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    }));
+  };
+
   const sendMessage = async (content: string, images: File[] = []) => {
     // Add user message
     const userMessage: MessageProps = {
@@ -34,10 +45,14 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     setMessages(prev => [...prev, userMessage]);
     
-    // Generate AI response
+    // Generate AI response with context
     setIsLoading(true);
     try {
-      const response = await geminiService.generateText(content, images);
+      // Get previous context for the AI
+      const conversationContext = getPreviousContext();
+      
+      // Send the message with context and any images
+      const response = await geminiService.generateText(content, images, conversationContext);
       
       // Add AI response
       const aiMessage: MessageProps = {

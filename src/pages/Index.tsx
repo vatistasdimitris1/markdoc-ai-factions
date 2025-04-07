@@ -3,14 +3,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { ChatMessage } from '@/components/ChatMessage';
 import { useChat, ChatProvider } from '@/contexts/ChatContext';
-import { Loader2, ImagePlus } from 'lucide-react';
+import { Loader2, ImagePlus, Pencil } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { ImageEditModal } from '@/components/ImageEditModal';
 
 const ChatInterface = () => {
-  const { messages, sendMessage, generateImage, isLoading } = useChat();
+  const { messages, sendMessage, generateImage, editImage, isLoading } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [imagePrompt, setImagePrompt] = useState('');
 
@@ -31,7 +31,7 @@ const ChatInterface = () => {
     <div className="flex flex-col h-full max-h-screen">
       <header className="border-b p-4 bg-card">
         <div className="container flex justify-between items-center">
-          <h1 className="text-xl font-bold">Gemini AI Chat</h1>
+          <h1 className="text-xl font-bold">CodX - AI by vatistasdimitris</h1>
           
           <div className="flex gap-2">
             <Sheet>
@@ -78,14 +78,14 @@ const ChatInterface = () => {
         <div className="container max-w-4xl mx-auto">
           {messages.length === 0 ? (
             <div className="text-center my-12 text-muted-foreground">
-              <p className="text-lg mb-2">Welcome to Gemini AI Chat</p>
-              <p>Send a message to start a conversation with Gemini AI.</p>
+              <p className="text-lg mb-2">Welcome to CodX - AI by vatistasdimitris</p>
+              <p>Send a message to start a conversation with CodX AI.</p>
               <p className="mt-4 text-sm">
                 You can use Markdown formatting in your messages:<br />
                 <code>**bold**</code>, <code>*italic*</code>, <code>`code`</code>, <code>```code blocks```</code>
               </p>
               <p className="mt-2 text-sm">
-                You can also upload images for analysis, generate new images, or edit existing images.
+                You can also upload images for analysis, generate new images, or edit existing images directly in the chat.
               </p>
             </div>
           ) : (

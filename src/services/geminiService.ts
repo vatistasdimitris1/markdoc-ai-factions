@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 
 const API_KEY = "AIzaSyCcovcQodNQl4vX5G3wHOFHWo2xM7vIav0";
@@ -12,8 +11,17 @@ interface GeminiImageGenerationResponse {
   imageUrl: string;
 }
 
+interface ConversationMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+}
+
 export const geminiService = {
-  async generateText(prompt: string, images: File[] = []): Promise<GeminiTextResponse> {
+  async generateText(
+    prompt: string, 
+    images: File[] = [], 
+    conversationHistory: ConversationMessage[] = []
+  ): Promise<GeminiTextResponse> {
     try {
       // For client-side usage, we need to convert images to base64
       const imageContents = await Promise.all(
@@ -25,20 +33,41 @@ export const geminiService = {
         })
       );
 
+      // Prepare contents including conversation history and system message
+      const contents = [];
+      
+      // Add system message to identify the AI
+      contents.push({
+        role: 'system',
+        parts: [{ text: "You are CodX AI, a helpful assistant created by vatistasdimitris." }]
+      });
+      
+      // Add conversation history if provided
+      if (conversationHistory.length > 0) {
+        conversationHistory.forEach(msg => {
+          contents.push({
+            role: msg.role,
+            parts: [{ text: msg.content }]
+          });
+        });
+      }
+      
+      // Add the current user message
+      contents.push({
+        role: 'user',
+        parts: [
+          { text: prompt },
+          ...imageContents.map(img => ({ inlineData: img }))
+        ]
+      });
+
       const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=" + API_KEY, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { text: prompt },
-                ...imageContents.map(img => ({ inlineData: img }))
-              ]
-            }
-          ],
+          contents,
           generationConfig: {
             temperature: 0.7,
             topK: 40,
