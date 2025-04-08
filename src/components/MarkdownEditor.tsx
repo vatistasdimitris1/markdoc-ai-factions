@@ -47,29 +47,26 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ onSubmit }) => {
   };
 
   return (
-    <Card className="p-4 border rounded-lg shadow-sm bg-white dark:bg-gray-900">
+    <Card className="p-4 border rounded-lg shadow-sm">
       <Textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Message CodX..."
-        className="min-h-[60px] mb-2 text-sm resize-none border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent"
+        placeholder="Type your message here..."
+        className="min-h-[100px] mb-2 text-sm"
         onKeyDown={handleKeyDown}
       />
       
-      <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
         <ImageUpload onUpload={handleImageUpload}>
-          <Button variant="ghost" size="sm" className="flex items-center gap-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+          <Button variant="outline" size="sm" className="flex items-center gap-1">
             <ImageIcon size={16} />
-            <span className="hidden sm:inline">Add image</span>
+            Add Image
           </Button>
         </ImageUpload>
         
-        <Button 
-          onClick={handleSubmit} 
-          className="rounded-full flex items-center justify-center w-10 h-10 p-0"
-          disabled={!content.trim() && images.length === 0}
-        >
+        <Button onClick={handleSubmit} className="flex items-center gap-1">
           <Send size={16} />
+          Send Message
         </Button>
       </div>
       
