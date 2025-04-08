@@ -1,13 +1,13 @@
 
-import React, { useRef } from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useRef, ReactNode } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
 interface ImageUploadProps {
   onUpload: (files: File[]) => void;
+  children?: ReactNode; // Add this to accept children
 }
 
-export const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload }) => {
+export const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload, children }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -45,14 +45,9 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload }) => {
         ref={fileInputRef}
         onChange={handleFileChange}
       />
-      <Button 
-        variant="outline" 
-        size="sm" 
-        onClick={() => fileInputRef.current?.click()}
-        className="flex items-center gap-1"
-      >
-        Add Image
-      </Button>
+      <div onClick={() => fileInputRef.current?.click()}>
+        {children}
+      </div>
     </>
   );
 };

@@ -3,25 +3,46 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { ChatMessage } from '@/components/ChatMessage';
 import { useChat, ChatProvider } from '@/contexts/ChatContext';
-import { Loader2, ImageIcon, Edit } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { Loader2, ImageIcon, Settings, Sun, Moon, Info, AlertTriangle, BookText, Brain, PenSquare, LineChart, ListTodo, Image as ImageAnalyzeIcon, AlignLeft, MicIcon, MessageSquarePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ImageEditModal } from '@/components/ImageEditModal';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
-const examplePrompts = [
-  "A futuristic city with flying cars and neon lights",
-  "A peaceful mountain landscape at sunset",
-  "A cute robot pet playing in a garden",
-  "An underwater scene with bioluminescent creatures",
-  "A fantasy castle in the clouds"
+const actionsConfig = [
+  { icon: <PenSquare className="h-5 w-5 text-purple-300" />, label: "Create Image", color: "purple" },
+  { icon: <AlignLeft className="h-5 w-5 text-green-300" />, label: "Summarize Text", color: "green" },
+  { icon: <MessageSquarePlus className="h-5 w-5 text-blue-300" />, label: "Help me write", color: "blue" },
+  { icon: <LineChart className="h-5 w-5 text-orange-300" />, label: "Analyze data", color: "orange" },
+  { icon: <ListTodo className="h-5 w-5 text-pink-300" />, label: "Make a plan", color: "pink" },
+  { icon: <ImageAnalyzeIcon className="h-5 w-5 text-yellow-300" />, label: "Analyze images", color: "yellow" },
 ];
 
 const ChatInterface = () => {
   const { messages, sendMessage, generateImage, isLoading } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [imagePrompt, setImagePrompt] = useState('');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [creativityLevel, setCreativityLevel] = useState<string>('balanced');
+
+  // Handle theme change
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -36,63 +57,64 @@ const ChatInterface = () => {
     }
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
   return (
-    <div className="flex flex-col h-full max-h-screen bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-950">
-      <header className="border-b p-3 bg-white dark:bg-gray-900 shadow-sm">
-        <div className="container flex justify-between items-center">
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            CodX - AI by vatistasdimitris
+    <div className="flex flex-col h-full max-h-screen bg-background purple-gradient-bg">
+      <header className="border-b border-purple-900/50 py-3 px-4 bg-black/10 sticky top-0 z-10">
+        <div className="container max-w-5xl mx-auto flex justify-between items-center">
+          <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            CodX
           </h1>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1">
-                  <ImageIcon size={16} />
-                  <span className="hidden sm:inline">Generate Image</span>
+                <Button variant="ghost" size="sm" className="rounded-full w-9 h-9 p-0 text-gray-300 hover:bg-purple-800/30">
+                  <ImageIcon size={18} />
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="glass-morphism border-purple-500/30 bg-black/40">
                 <DialogHeader>
-                  <DialogTitle>Generate an Image</DialogTitle>
-                  <DialogDescription>
+                  <DialogTitle className="text-white">Generate an Image</DialogTitle>
+                  <DialogDescription className="text-gray-300">
                     Enter a detailed description of the image you want to create.
                   </DialogDescription>
                 </DialogHeader>
                 
                 <form onSubmit={handleImageGeneration} className="mt-4 space-y-4">
-                  <Input
-                    value={imagePrompt}
-                    onChange={(e) => setImagePrompt(e.target.value)}
-                    placeholder="Describe the image you want to generate..."
-                    className="w-full"
-                  />
+                  <div className="glass-morphism p-1 rounded-full border border-purple-500/30">
+                    <input
+                      value={imagePrompt}
+                      onChange={(e) => setImagePrompt(e.target.value)}
+                      placeholder="Describe the image you want to generate..."
+                      className="w-full py-2 px-4 bg-transparent border-none focus:outline-none text-white rounded-full placeholder:text-gray-400"
+                    />
+                  </div>
                   
-                  <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-md">
-                    <p className="text-sm font-medium mb-2">Example prompts:</p>
-                    <Carousel className="w-full">
-                      <CarouselContent>
-                        {examplePrompts.map((prompt, index) => (
-                          <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                            <div 
-                              className="bg-white dark:bg-gray-800 p-3 rounded-md border cursor-pointer hover:border-primary transition-colors"
-                              onClick={() => setImagePrompt(prompt)}
-                            >
-                              <p className="text-sm">{prompt}</p>
-                            </div>
-                          </CarouselItem>
-                        ))}
-                      </CarouselContent>
-                      <div className="flex justify-center mt-2">
-                        <CarouselPrevious className="relative static" />
-                        <CarouselNext className="relative static" />
-                      </div>
-                    </Carousel>
+                  <div className="glass-morphism p-4 rounded-xl border border-purple-500/30">
+                    <p className="text-sm font-medium mb-2 text-white">Creativity Level</p>
+                    <div className="flex gap-2">
+                      {['low', 'balanced', 'high'].map((level) => (
+                        <Button 
+                          key={level} 
+                          type="button"
+                          variant={creativityLevel === level ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setCreativityLevel(level)}
+                          className={`capitalize ${creativityLevel === level ? 'bg-purple-600 hover:bg-purple-700' : 'text-gray-300 border-purple-500/30 hover:bg-purple-800/30'}`}
+                        >
+                          {level}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                   
                   <Button 
                     type="submit" 
-                    className="w-full"
+                    className="w-full bg-purple-600 hover:bg-purple-700"
                     disabled={isLoading || !imagePrompt.trim()}
                   >
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ImageIcon className="mr-2 h-4 w-4" />}
@@ -103,29 +125,98 @@ const ChatInterface = () => {
             </Dialog>
             
             <ImageEditModal />
+            
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={toggleTheme} 
+              className="rounded-full w-9 h-9 p-0 text-gray-300 hover:bg-purple-800/30"
+            >
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="rounded-full w-9 h-9 p-0 text-gray-300 hover:bg-purple-800/30">
+                  <Settings size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 glass-morphism border-purple-500/30 bg-black/50 text-white">
+                <DropdownMenuLabel>Settings</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-purple-500/30" />
+                
+                <DropdownMenuItem onSelect={() => toggleTheme()} className="hover:bg-purple-800/30">
+                  {theme === 'light' ? <Moon className="mr-2 h-4 w-4" /> : <Sun className="mr-2 h-4 w-4" />}
+                  {theme === 'light' ? 'Dark mode' : 'Light mode'}
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator className="bg-purple-500/30" />
+                
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="hover:bg-purple-800/30">
+                      <Info className="mr-2 h-4 w-4" />
+                      About CodX
+                    </DropdownMenuItem>
+                  </SheetTrigger>
+                  <SheetContent className="glass-morphism border-purple-500/30 bg-black/50 text-white">
+                    <SheetHeader>
+                      <SheetTitle className="text-white">About CodX</SheetTitle>
+                      <SheetDescription className="text-gray-300">
+                        CodX is an AI assistant powered by vatistasdimitris
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-6 space-y-4">
+                      <div className="flex items-start gap-2 text-amber-400 glass-morphism p-3 rounded-xl border-amber-500/30">
+                        <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <p className="font-medium">AI Limitations</p>
+                          <p className="mt-1 text-gray-300">CodX can make mistakes. Consider checking important information.</p>
+                        </div>
+                      </div>
+                      
+                      <div className="text-sm space-y-4">
+                        <div>
+                          <h3 className="font-medium mb-1">Privacy Policy</h3>
+                          <p className="text-gray-300">
+                            We respect your privacy and are committed to protecting your personal data.
+                            Your conversations with CodX may be stored to improve our services.
+                          </p>
+                        </div>
+                        
+                        <div>
+                          <h3 className="font-medium mb-1">Terms of Service</h3>
+                          <p className="text-gray-300">
+                            By using CodX, you agree to our terms of service. CodX should not be used
+                            for harmful, illegal, or unethical purposes.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
       
-      <main className="flex-1 overflow-auto p-4">
-        <div className="container max-w-3xl mx-auto">
+      <main className="flex-1 overflow-auto">
+        <div className="container max-w-3xl mx-auto pt-4 pb-20">
           {messages.length === 0 ? (
-            <div className="text-center my-12 p-6 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
-              <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome to CodX AI</h2>
-              <p className="text-lg mb-6 text-gray-600 dark:text-gray-300">Start a conversation or generate images with advanced AI</p>
+            <div className="text-center my-12 p-6">
+              <h2 className="text-2xl font-bold mb-4 text-gradient">Hi, I'm CodX</h2>
+              <p className="text-lg mb-6 text-gray-300">How can I help you today?</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-indigo-900 p-6 rounded-lg shadow-sm">
-                  <ImageIcon className="mx-auto h-10 w-10 text-blue-500 mb-4" />
-                  <h3 className="font-medium text-lg mb-2">Generate Images</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Create unique images from text descriptions</p>
-                </div>
-                
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-purple-900 p-6 rounded-lg shadow-sm">
-                  <Edit className="mx-auto h-10 w-10 text-purple-500 mb-4" />
-                  <h3 className="font-medium text-lg mb-2">Edit Images</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">Modify and transform your existing images</p>
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-8 max-w-2xl mx-auto">
+                {actionsConfig.map((action, index) => (
+                  <button key={index} className="action-card">
+                    <div className="action-icon">
+                      {action.icon}
+                    </div>
+                    <span className="text-white text-sm">{action.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
           ) : (
@@ -135,8 +226,11 @@ const ChatInterface = () => {
           )}
           
           {isLoading && (
-            <div className="flex justify-center my-4">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="flex justify-center my-8">
+              <div className="flex flex-col items-center">
+                <Loader2 className="h-8 w-8 animate-spin text-purple-400 mb-2" />
+                <p className="text-sm text-gray-300">Generating response...</p>
+              </div>
             </div>
           )}
           
@@ -144,7 +238,7 @@ const ChatInterface = () => {
         </div>
       </main>
       
-      <footer className="border-t p-3 bg-white dark:bg-gray-900">
+      <footer className="fixed bottom-4 left-0 right-0 px-4">
         <div className="container max-w-3xl mx-auto">
           <MarkdownEditor onSubmit={sendMessage} />
         </div>
@@ -156,7 +250,7 @@ const ChatInterface = () => {
 const Index = () => {
   return (
     <ChatProvider>
-      <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-950">
+      <div className="min-h-screen purple-gradient-bg">
         <ChatInterface />
       </div>
     </ChatProvider>
