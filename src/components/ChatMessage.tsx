@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
@@ -19,12 +20,12 @@ const senderInfo = {
   user: {
     name: 'You',
     avatar: '👤',
-    color: 'bg-purple-950/30',
+    color: 'bg-gray-50 dark:bg-gray-900/30',
   },
   ai: {
-    name: 'CodX',
+    name: 'CodX - AI by vatistasdimitris',
     avatar: '🤖',
-    color: 'bg-purple-800/10',
+    color: 'bg-blue-50 border-blue-200 dark:bg-blue-950/20 dark:border-blue-800/30',
   },
 };
 
@@ -47,18 +48,18 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
   };
 
   return (
-    <div className={`py-4 ${sender === 'user' ? '' : 'bg-purple-950/10'}`}>
+    <div className={`py-6 ${sender === 'user' ? '' : 'bg-gray-50 dark:bg-gray-900/20'}`}>
       <div className="container max-w-3xl mx-auto px-4">
         <div className="flex items-start gap-3">
-          <Avatar className="mt-1 border border-purple-500/30">
-            <AvatarFallback className="bg-purple-900 text-white">{senderData.avatar}</AvatarFallback>
+          <Avatar className="mt-1">
+            <AvatarFallback>{senderData.avatar}</AvatarFallback>
             <AvatarImage src={`/avatar-${sender}.png`} />
           </Avatar>
           
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium text-white">{senderData.name}</h4>
-              <span className="text-xs text-gray-400">{formattedTime}</span>
+              <h4 className="font-medium">{senderData.name}</h4>
+              <span className="text-xs text-muted-foreground">{formattedTime}</span>
             </div>
             
             {images && images.length > 0 && (
@@ -67,19 +68,19 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
                   {images.map((img, idx) => (
                     <div 
                       key={idx} 
-                      className="relative group glass-morphism p-1 rounded-xl"
+                      className="relative group"
                     >
                       <img 
                         src={img} 
                         alt={`${sender === 'ai' ? 'Generated' : 'Uploaded'} image ${idx + 1}`}
-                        className="max-h-40 object-contain rounded-lg cursor-pointer transition-transform hover:scale-[1.02]"
+                        className="max-h-40 object-contain rounded-md border border-muted cursor-pointer transition-transform hover:scale-[1.02]"
                         onClick={() => setSelectedImage(img)}
                       />
                       {sender === 'ai' && (
                         <Button 
                           size="sm" 
                           variant="outline" 
-                          className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 border-purple-500/30 hover:bg-purple-900/50 text-white"
+                          className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDownloadImage(img);
@@ -94,18 +95,14 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
               </div>
             )}
             
-            {content && (
-              <div className="text-gray-100">
-                <MarkdownRenderer content={content} />
-              </div>
-            )}
+            {content && <MarkdownRenderer content={content} />}
           </div>
         </div>
       </div>
 
       {/* Image Preview Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-        <DialogContent className="max-w-3xl glass-morphism bg-black/40 border-purple-500/30 text-white">
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Image Preview</DialogTitle>
           </DialogHeader>
@@ -120,7 +117,7 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
             <div className="flex justify-end mt-4">
               <Button 
                 onClick={() => handleDownloadImage(selectedImage)}
-                className="gap-2 bg-purple-600 hover:bg-purple-700"
+                className="gap-2"
               >
                 <Download size={16} />
                 Download Image
