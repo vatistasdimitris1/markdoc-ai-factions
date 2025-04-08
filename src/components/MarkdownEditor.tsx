@@ -57,14 +57,12 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ onSubmit }) => {
       />
       
       <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-        <div className="flex gap-2">
-          <ImageUpload onUpload={handleImageUpload}>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
-              <ImageIcon size={16} />
-              Add Image
-            </Button>
-          </ImageUpload>
-        </div>
+        <ImageUpload onUpload={handleImageUpload}>
+          <Button variant="outline" size="sm" className="flex items-center gap-1">
+            <ImageIcon size={16} />
+            Add Image
+          </Button>
+        </ImageUpload>
         
         <Button onClick={handleSubmit} className="flex items-center gap-1">
           <Send size={16} />
