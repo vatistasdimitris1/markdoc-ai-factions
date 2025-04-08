@@ -3,6 +3,9 @@ import React from 'react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export type SenderType = 'user' | 'ai';
 
@@ -20,7 +23,7 @@ const senderInfo = {
     color: 'bg-secondary',
   },
   ai: {
-    name: 'Gemini AI',
+    name: 'CodX - AI by vatistasdimitris',
     avatar: '🤖',
     color: 'bg-blue-100 border-blue-300 dark:bg-blue-950/20 dark:border-blue-800',
   },
@@ -35,9 +38,9 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
   }).format(timestamp);
 
   return (
-    <Card className={`p-4 border ${senderData.color} mb-4`}>
+    <Card className={`p-4 border ${senderData.color} mb-4 shadow-sm transition-all hover:shadow-md`}>
       <div className="flex items-start gap-3">
-        <Avatar>
+        <Avatar className="mt-1">
           <AvatarFallback>{senderData.avatar}</AvatarFallback>
           <AvatarImage src={`/avatar-${sender}.png`} />
         </Avatar>
@@ -49,16 +52,50 @@ export const ChatMessage: React.FC<MessageProps> = ({ content, sender, timestamp
           </div>
           
           {images && images.length > 0 && (
-            <div className="mb-3 space-y-2">
-              {images.map((img, index) => (
-                <div key={index} className="relative rounded-md overflow-hidden border border-muted">
+            <div className="mb-3">
+              {images.length === 1 ? (
+                <div className="relative rounded-md overflow-hidden border border-muted mb-2">
                   <img 
-                    src={img} 
-                    alt={`${sender === 'ai' ? 'Generated' : 'Uploaded'} image ${index + 1}`}
+                    src={images[0]} 
+                    alt={`${sender === 'ai' ? 'Generated' : 'Uploaded'} image`}
                     className="max-w-full max-h-80 object-contain mx-auto"
                   />
                 </div>
-              ))}
+              ) : (
+                <Collapsible>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex gap-2 overflow-x-auto py-1">
+                      {images.map((img, idx) => (
+                        <img 
+                          key={idx}
+                          src={img} 
+                          alt={`Thumbnail ${idx + 1}`}
+                          className="h-16 w-16 object-cover rounded-md border border-muted"
+                        />
+                      ))}
+                    </div>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="outline" size="sm" className="ml-2 flex items-center gap-1">
+                        <Eye size={16} />
+                        <span>View all</span>
+                      </Button>
+                    </CollapsibleTrigger>
+                  </div>
+                  <CollapsibleContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+                      {images.map((img, index) => (
+                        <div key={index} className="relative rounded-md overflow-hidden border border-muted">
+                          <img 
+                            src={img} 
+                            alt={`${sender === 'ai' ? 'Generated' : 'Uploaded'} image ${index + 1}`}
+                            className="max-w-full max-h-80 object-contain mx-auto"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
             </div>
           )}
           

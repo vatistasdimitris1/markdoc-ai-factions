@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ImageUpload } from './ImageUpload';
 import { useToast } from '@/components/ui/use-toast';
 import { Card } from '@/components/ui/card';
+import { Send, ImageIcon } from 'lucide-react';
 
 interface MarkdownEditorProps {
   onSubmit: (content: string, images: File[]) => void;
@@ -22,11 +23,6 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ onSubmit }) => {
       description: `${files.length} image(s) added to your message`,
     });
   };
-
-  const handleAddCode = () => {
-    const codeBlock = "```\n// Your code here\n```";
-    setContent((prev) => prev + "\n" + codeBlock + "\n");
-  };
   
   const handleSubmit = () => {
     if (!content.trim() && images.length === 0) {
@@ -43,29 +39,35 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ onSubmit }) => {
     setImages([]);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
   return (
     <Card className="p-4 border rounded-lg shadow-sm">
       <Textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        placeholder="Write in Markdown - **bold**, *italic*, `code`, > quotes, etc."
-        className="min-h-[150px] mb-2 font-mono text-sm"
+        placeholder="Type your message here..."
+        className="min-h-[100px] mb-2 text-sm"
+        onKeyDown={handleKeyDown}
       />
       
       <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleAddCode}
-            className="flex items-center gap-1"
-          >
-            Add Code Block
-          </Button>
-          <ImageUpload onUpload={handleImageUpload} />
+          <ImageUpload onUpload={handleImageUpload}>
+            <Button variant="outline" size="sm" className="flex items-center gap-1">
+              <ImageIcon size={16} />
+              Add Image
+            </Button>
+          </ImageUpload>
         </div>
         
-        <Button onClick={handleSubmit}>
+        <Button onClick={handleSubmit} className="flex items-center gap-1">
+          <Send size={16} />
           Send Message
         </Button>
       </div>
