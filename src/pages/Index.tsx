@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MarkdownEditor } from '@/components/MarkdownEditor';
 import { ChatMessage } from '@/components/ChatMessage';
 import { useChat, ChatProvider } from '@/contexts/ChatContext';
-import { Loader2, ImageIcon, Settings, Sun, Moon, Info, Warning } from 'lucide-react';
+import { Loader2, ImageIcon, Settings, Sun, Moon, Info, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -189,7 +189,7 @@ const ChatInterface = () => {
                     </SheetHeader>
                     <div className="mt-6 space-y-4">
                       <div className="flex items-start gap-2 text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 p-3 rounded-md">
-                        <Warning className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
                         <div className="text-sm">
                           <p className="font-medium">AI Limitations</p>
                           <p className="mt-1 text-muted-foreground">CodX can make mistakes. Consider checking important information.</p>
